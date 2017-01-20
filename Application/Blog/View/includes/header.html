@@ -1,0 +1,398 @@
+<style type="text/css">
+    a {cursor:pointer;}
+    .navbar-right{padding-right:30px;}
+    .navbar-right ul li {float:left;margin:17px 15px 0 0;}
+    .navbar-right a i {margin-right:4px;}
+    .navbar-right .group2 {display:none;}
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">nodejs nodejs博客</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"><i class="icon-github-alt icon-2x"></i></a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                
+                <li class="active"><a href="/">首页</a></li>
+                <foreach name="forumList" item="item" >
+                    <li><a href="{:U('Forum/index')}?id={$item.id}">{$item.name}</a></li>
+                </foreach>
+            </ul>
+
+            <div class="navbar-right">
+                <ul>
+                    <li class="group1"><a id="signin"><i class="icon-user icon-large"></i>登录</a></li>
+                    <li class="group1"><a id="signup"><i class="icon-signin icon-large"></i>注册</a></li>
+
+                    <li class="group2"><a><i class="icon-user icon-large"></i>欢迎：<span id="sign-username"></span></a></li>
+                    <li class="group2"><a id="signout"><i class="icon-signout icon-large"></i>退出</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- 消息modal -->
+<div class="modal fade" id="message-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span style="font-size:24px;color:#666;"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- 登录Modal -->
+<div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">登录</h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" id="signin-form">
+                    <input type="hidden" name="_csrf" value="<%= csrf %>"/>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">用户名：</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="username" class="form-control" placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">密码：</label>
+                        <div class="col-sm-10">
+                            <input type="password" name="password" class="form-control" placeholder="请输入密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-success">登录</button>
+                            <button type="button" class="btn btn-default btn-cancel">取消</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">
+                            <h5 id="login-error-message" class="hidden text-warning">用户名或密码不正确</h5>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 注册Modal -->
+<div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">注册</h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" id="signup-form">
+
+                    <input type="hidden" name="_csrf" value="<%= csrf %>"/>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">用户名：</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="username" class="form-control" placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">密码：</label>
+                        <div class="col-sm-10">
+                            <input type="password" name="password" class="form-control" placeholder="请输入密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">验证码：</label>
+                        <div class="col-sm-10" id="captcha-box">
+                            <input type="text" name="captcha" class="form-control" placeholder="请输入验证码">
+                            <img id="captcha" src='/user/captcha?width=100&height=30&_csrf=<%= csrf %>' onclick="this.src='/user/captcha?width=100&height=30&_csrf=<%= csrf %>&timestamp='+new Date().getTime();"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-warning">注册</button>
+                            <button type="button" class="btn btn-default btn-cancel">取消</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">
+                            <h5 id="signin-error-message" class="hidden text-warning">验证码错误</h5>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(function() {
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            url:"/index/header",
+            data:{_csrf:csrf},
+            async:false,
+            success:function(data) {
+                if(data) {
+                    var arr = [];
+                    arr.push('<li class="active"><a href="/">首页</a></li>');
+                    for(var index in data.navs) {
+                        var href = "/show/lists?forumId="+data.navs[index]._id;
+                        var $element = $("<li><a></a></li>");
+                        $element.children().attr("href",href);
+                        $element.children().text(data.navs[index].name);
+                        arr.push($element);
+                    }
+                    arr.push($('<li><a target="_blank" href="/chat/index">聊天室</a></li>'));
+                    arr.push($('<li><a href="/guestbook/index">留言板</a></li>'));
+                    $("ul.navbar-nav").prepend(arr);
+
+                    if(data.user) {
+                        $("#sign-username").text(data.user.username);
+                        $(".navbar-right").find(".group2").show().end().find(".group1").hide();
+                    }
+
+                }
+            }
+        });
+
+        var url = window.location.pathname + window.location.search;
+        $("ul.navbar-nav li").each(function(i,e) {
+            var href = $(this).children().attr("href");
+            if(url == href) {
+                $(this).siblings(".active").removeClass().end().addClass("active");
+            }
+        });
+        //点击事件
+        $(".navbar-nav > li > a").click(function(e) {
+            var text = $(this).text();
+            if(text == "聊天室") {
+                if(!isLogin()) {
+                    e.preventDefault();
+                    $("#signin-modal").modal("show");
+                }
+            }
+        });
+
+        //登录
+        $("#signin").click(function() {
+            $("#signin-modal").modal("show");
+        });
+        //注册
+        $("#signup").click(function() {
+            $("#signup-modal").modal("show");
+        });
+        //退出
+        $("#signout").click(function() {
+            $.ajax({
+                type:"post",
+                dataType:"text",
+                data:{_csrf:csrf},
+                url:"/user/signout",
+                success:function(data) {
+                    if(data && data === "success") {
+                        window.location.reload();
+                    }
+                }
+            });
+        })
+        validate();
+    })
+
+
+    //验证
+    function validate() {
+        /**
+         * 登录
+         */
+        $("#signin-form").bootstrapValidator({
+            message: '不是有效的值',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            excluded: ':disabled',
+            fields: {
+                username: {
+                    message: '不是有效的值',
+                    validators: {
+                        notEmpty: {
+                            message: '用户名不能为空'
+                        },
+                        stringLength: {
+                            min: 3,
+                            max: 30,
+                            message: '长度必须长于3位，小于30位'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: '只能包含字母数字_'
+                        }
+                    }
+                },
+                password: {
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        },
+                        stringLength: {
+                            min: 3,
+                            max: 30,
+                            message: '长度必须长于3位，小于30位'
+                        }
+                    }
+                }
+            }
+        }).on('success.form.bv', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/user/signin",
+                data:$("#signin-form").serialize(),
+                async:false,
+                success:function(res) {
+                    if(res && res.status === "success") {
+                        $("#sign-username").text(res.data.username);
+                        $(".navbar-right").find(" .group1").hide().end().find(".group2").show();
+                        $('#signin-modal').modal('hide');
+                        $("#signin-form").bootstrapValidator('resetForm', true);
+                    } else {
+                        $("#login-error-message").removeClass("hidden");
+                    }
+                }
+            });
+        });
+
+
+        /**
+         * 注册
+         */
+        $("#signup-form").bootstrapValidator({
+            message: '不是有效的值',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            excluded: ':disabled',
+            fields: {
+                username: {
+                    message: '不是有效的值',
+                    validators: {
+                        notEmpty: {
+                            message: '用户名不能为空'
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 20,
+                            message: '长度必须长于2位，小于20位'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_\u4E00-\u9FA5]+$/,
+                            message: '只能包含字母数字_'
+                        },
+                        callback: {
+                            message: '用户名已经被占用',
+                            callback: function (value, validator) {
+                                var res = true;
+                                if (value.match(/^[a-zA-Z0-9_]+$/)) {
+                                    $.ajax({
+                                        url: '/user/isExistUsername',
+                                        type: 'post',
+                                        dataType: 'text',
+                                        async: false,
+                                        data: {_csrf:csrf,username: value},
+                                        success: function (data) {
+                                            if (data && data == 'exist') {
+                                                res = false;
+                                            }
+                                        }
+                                    });
+                                }
+                                return res;
+                            }
+                        }
+                    }
+                },
+                password: {
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        },
+                        stringLength: {
+                            min: 3,
+                            max: 30,
+                            message: '长度必须长于3位，小于30位'
+                        }
+                    }
+                },
+                captcha: {
+                    validators: {
+                        notEmpty: {
+                            message: '验证码不能为空'
+                        },
+                        stringLength: {
+                            min: 4,
+                            max: 4,
+                            message: '长度必须不等于4位'
+                        },
+                        regexp: {
+                            regexp: /^[0-9]{4}$/,
+                            message: '只能为数字'
+                        }
+                    }
+                }
+            }
+        }).on('success.form.bv', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/user/signup",
+                data:$("#signup-form").serialize(),
+                async:false,
+                success:function(data) {
+                    if(data) {
+                        if(data.status == "success") {
+                            $("#sign-username").text(data.data.username);
+                            $(".navbar-right").find(" .group1").hide().end().find(".group2").show();
+                            $('#signup-modal').modal('hide');
+                            $("#signup-form").bootstrapValidator('resetForm', true);
+                        } else if(data == "captchaError") {
+                            $("#signin-error-message").removeClass("hidden");
+                            $("#captcha")[0].onclick();
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+
+
+</script>
+

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>管理员 - 后台</title>
+
+    <link rel="shortcut icon" href="/images/manager.ico">
+    <link rel="stylesheet" type="text/css" href="{$Think.const.ADMIN_LIB_URL}/jquery-easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="{$Think.const.ADMIN_LIB_URL}/jquery-easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{$Think.const.ADMIN_CSS_URL}/admin.css">
+
+    <script type="text/javascript" src="{$Think.const.ADMIN_JS_URL}/global.js"></script>
+    <script type="text/javascript" src="{$Think.const.ADMIN_LIB_URL}/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="{$Think.const.ADMIN_LIB_URL}/jquery-easyui/jquery.easyui.min.js"></script>
+</head>
+
+<body class="easyui-layout">
+<!-- 头部 -->
+<div data-options="region:'north',split:true" style="height:100px;">
+    <h1 style="letter-spacing:5px;color:#333;line-height:100px;text-align:center;font-size:40px;">管理员后台管理中心</h1>
+</div>
+
+<!-- 菜单区 -->
+<div data-options="region:'west',split:true" style="width:200px;">
+    <div id="accordion-nav" class="easyui-accordion" data-options="fit:true,border:true">
+        <div title="内容管理" data-options="selected:true">
+            <ul>
+                <li>
+                    <a href="javascript:;" onclick="addTab(this,'/admin/article/index')">
+                        <img src="{$Think.const.ADMIN_IMG_URL}/icon/abiword_48.png" />
+                        <span>文章管理</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" onclick="addTab(this,'/admin/user/index')">
+                        <img src="{$Think.const.ADMIN_IMG_URL}/icon/access.png" />
+                        <span>用户</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" onclick="addTab(this,'/admin/role/index')">
+                        <img src="{$Think.const.ADMIN_IMG_URL}/icon/yumex.png" />
+                        <span>角色</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" onclick="addTab(this,'/admin/permission/index')">
+                        <img src="{$Think.const.ADMIN_IMG_URL}/icon/zim.png" />
+                        <span>权限</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" onclick="addTab(this,'/admin/comment/index')">
+                        <img src="{$Think.const.ADMIN_IMG_URL}/icon/zeitgeist.png" />
+                        <span>评论</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div title="其它内容">
+            content3
+        </div>
+    </div>
+</div>
+
+<!-- 内容区 -->
+<div data-options="region:'center'">
+    <div id="ttHome" class="easyui-tabs" data-options="fit:true,border:false">
+    </div>
+</div>
+</body>
+
+
+<script type="text/javascript">
+    function addTab(obj, href) {
+        var title = $(obj).find("span").text();
+        if ($('#ttHome').tabs('exists', title)) {
+            $('#ttHome').tabs('select', title);
+        } else {
+            $('#ttHome').tabs('add', {
+                title: title,
+                href: href,
+                cache:false,
+                closable: true,
+                selected:true,
+                iconCls: 'icon-man'
+            });
+        }
+    }
+
+    function OpenMessageAlert(msg, method) {
+        $.messager.alert('提示', msg, function (r) {
+            if (r) {
+                if (method != null && method != undefined) {
+                    eval(method);
+                }
+            }
+        });
+    }
+
+
+    function OpenConfirmAlert(msg, method) {
+        $.messager.confirm('提示', msg, function (r) {
+            if (r) {
+                if (method != null && method != undefined) {
+                    eval(method);
+                }
+            }
+        });
+    }
+</script>
+
+
+
+</html>

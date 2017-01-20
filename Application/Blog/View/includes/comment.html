@@ -1,0 +1,237 @@
+<!--  icon-thumbs-up --->
+<div class="comment">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <form role="form">
+                <div class="form-group">
+                    <label for="name">评论</label>
+                    <textarea  placeholder="骚年既然来了，何不吐槽一翻呢？" class="form-control txt-content" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-submit-comment btn-primary">发表评论</button>
+                </div>
+            </form>
+        </li>
+    </ul>
+</div>
+
+
+
+<!-- 评论模板 -->
+<div class="comment-template hidden">
+    <li class="list-group-item item">
+        <div class="media">
+            <a class="pull-left">
+                <img class="media-object icon" src="/images/face/m24.gif">
+            </a>
+            <div class="media-body">
+                <h4 class="media-heading username"></h4>
+                <span class="content"></span>
+                <div class="operate">
+                    <i class="icon-thumbs-up btn-support"><span></span></i>
+                    <i class="icon-share-alt btn-reply"><span>回复</span></i>
+                </div>
+
+                <!--  回复  -->
+                <form class="form-horizontal reply-box">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <textarea  placeholder="回复:" class="form-control txt-reply" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-0 col-sm-10">
+                            <button data-id="2" type="button" class="btn btn-warning btn-reply-confirm">确定</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </li>
+</div>
+
+
+
+<script type="text/javascript">
+    var articleId;
+    var commentOrReply;
+    var $reply;
+    $(function() {
+        articleId = "<%= pageData._id %>";
+        loadComment();
+        listenerEvent();
+    });
+
+
+    //监听事件
+    function listenerEvent() {
+        //提交评论
+        $(".btn-submit-comment").click(function() {
+            //评论内容
+            var comment = $(".txt-content").val();
+            if(comment) {
+                if(isLogin()) {
+                    commitComment(comment);
+                } else {
+                    $("#signin-modal").modal("show");
+                }
+            }
+        });
+        listenerCommentEvent();
+    }
+
+    //监听评论事件
+    function listenerCommentEvent() {
+        //回复按钮
+        $(".btn-reply").click(function() {
+            var $body =  $(this).parents(".list-group");
+            $body.find(".reply-box").slideUp();
+            var $reply =$(this).parent().next();
+            if($reply.is(":visible")) {
+                $reply.slideUp();
+            } else {
+                $reply.slideDown();
+            }
+        });
+
+        //确定回复
+        $(".btn-reply-confirm").click(function() {
+            $reply = $(this);
+            var replyComment = $reply.parents(".reply-box").find(".txt-reply").val();
+            if(replyComment) {
+                var _id = $reply.attr("data-id");
+                if(isLogin()) {
+                    commitReplyComment(_id,replyComment);
+                } else {
+                    $("#signin-modal").modal("show");
+                }
+            }
+        });
+
+        //点击支持
+        $(".btn-support").click(function() {
+            var _self = $(this);
+            var _id = _self.attr("data-id");
+            if(_id) {
+                $.ajax({
+                    type:"post",
+                    dataType:"text",
+                    data:{
+                        _id:_id,
+                        _csrf:csrf
+                    },
+                    async:false,
+                    url:"/comment/submitSupport",
+                    success:function(data) {
+                        if(data&&data == "success") {
+                            var val = _self.children().text().replace(/[()]/g,"");
+                            _self.children().text("("+(parseInt(val)+1)+")");
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    //提交回复评论
+    function commitReplyComment(_id,replyComment) {
+        $.ajax({
+            type:"post",
+            dataType:"text",
+            data:{
+                _csrf:csrf,
+                _id:_id,
+                replyComment:replyComment,
+                articleId:articleId
+            },
+            url:"/comment/submitReplyComment",
+            async:false,
+            success:function(data) {
+                if(data&&data=="success") {
+                    $reply.parents(".comment-reply-box").find(".txt-reply").val("");
+                    loadComment();
+                } else if(data && data == "notPermission") {
+                    $(".reply-box").each(function(i,e) {
+                        showMessage("你没有权限");
+                        if($(this).is(":visible")) {
+                            $(this).hide();
+                        }
+                    })
+                }
+            }
+        });
+    }
+
+    //提交评论
+    function commitComment(comment) {
+        $.ajax({
+            type:"post",
+            dataType:"text",
+            data:{
+                _csrf:csrf,
+                comment:comment,
+                articleId:articleId
+            },
+            url:"/comment/submitComment",
+            success:function(data) {
+                if(data && data == "success") {
+                    $(".txt-content").val("");
+                    loadComment();
+                } else if(data && data == "notPermission") {
+                    $(".reply-box").each(function(i,e) {
+                        showMessage("你没有权限");
+                        if($(this).is(":visible")) {
+                            $(this).hide();
+                        }
+                    })
+                }
+            }
+        });
+    }
+
+    //加载评论
+    function loadComment() {
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            url:"/comment/getComments",
+            data:{
+                _csrf:csrf,
+                articleId:articleId
+            },
+            success:function(data) {
+                if(data && data.length > 0) {
+                    var $item = $(".comment .list-group .item").remove();
+                    var arr = [];
+                    arr.push($('<li class="list-group-item item">评论信息：</li>'));
+
+                    data.forEach(function(item) {
+                        var $item = $($(".comment-template").html());
+                        $item.find(".icon").attr("src","/images/face/m"+item.icon+".gif");
+                        $item.find(".username").text(item.username);
+                        $item.find(".content").text(item.content);
+                        $item.find(".btn-reply-confirm").attr("data-id",item._id);
+                        $item.find(".operate .btn-support span").text("("+item.supportCount+")").parent().attr("data-id",item._id);
+                        
+                        if(item.reply && item.reply.length>0) {
+                            var son = [];
+                            item.reply.forEach(function(i) {
+                                $media = $($(".comment-template .list-group-item").html());
+                                $media.find(".icon").attr("src","/images/face/m"+i.icon+".gif");
+                                $media.find(".username").text(i.username);
+                                $media.find(".content").text(i.content);
+                                $media.find(".btn-reply-confirm").attr("data-id",item._id);
+                                $media.find(".operate").remove().end().find(".comment-reply-box").remove();
+                                son.push($media);
+                            })
+                            $item.find(".media-body:first").append(son);
+                        }
+                        arr.push($item);
+                    })
+                    $(".comment .list-group").prepend(arr);
+                    listenerCommentEvent();
+                }
+            }
+        });
+    }
+</script>

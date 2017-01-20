@@ -1,0 +1,102 @@
+
+<link rel="stylesheet" type="text/css" href="{$Think.const.LIB_URL}/syntaxhighlighter/styles/shCore.css">
+<link rel="stylesheet" type="text/css" href="{$Think.const.LIB_URL}/syntaxhighlighter/styles/shThemeEclipse.css">
+
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushCSharp.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushCss.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushSql.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushXml.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushPhp.js"></script>
+<script type="text/javascript" src="{$Think.const.LIB_URL}/syntaxhighlighter/scripts/shBrushSass.js"></script>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+<div class="container">
+    <ol class="breadcrumb panel panel-default">
+        <li class="disabled">当前位置：</li>
+        <li class="breadcrumb-forum-name"><a href="/">首页</a></li>
+        <li><a href=""></a></li>
+        <li class="active"><%= pageData?pageData.title:"" %></li>
+    </ol>
+    <script type="text/javascript">
+        $(function() {
+            var articleId = "<%= pageData?pageData._id:"" %>";
+            if(articleId) {
+                $.ajax({
+                    type:"post",
+                    dataType:"json",
+                    data:{
+                        _csrf:csrf,
+                        articleId:articleId
+                    },
+                    url:"/detail/getForumByArticleId",
+                    success:function(data) {
+                        if(data) {
+                            $(".breadcrumb li:eq(2)").children().text(data.name).attr("href","/show/lists?forumId="+data._id);
+                        }
+                    }
+                });
+            }
+        })
+    </script>
+
+    <div class="article">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">
+                    <span class="article-title">{$article.title}</span>
+                    <div class="article-info">
+                        <span class="article-create-date">创建时间：{$article.create_at|date="Y-m-d H:i:s",###}</span>
+                        <span class="article-author">作者：{$article.author}</span>
+                        <span class="article-read-count">阅读量：1</span>
+                    </div>
+                </h3>
+            </div>
+            <div class="panel-body">
+
+                <!--<div class="panel panel-success bg-success">
+                    <div class="panel-body">文章源地址：<a href="http://www.baidu.com">http://www.baidu.com</a></div>
+                </div>-->
+
+                {$article.content}
+
+                <div class="article-tags">
+                    <i class="icon-tags icon-large"><script>
+                            var tag = "<%= pageData?pageData.tag:"" %>";
+                            if(tag) {
+                                var tags = tag.split(',');
+                                for(var index in tags) {
+                                    document.write("<a href='/lists/tag?keywords="+tags[index]+"'>"+tags[index]+"</a>");
+                                }
+                            }
+                        </script></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="pager">
+        <% if(prevNext.prev) {%>
+            <li class="pull-left"><a href="/show/detail?articleId=<%= prevNext.prev %>">上一篇</a></li>
+        <% } else { %>
+            <li class="pull-left disabled"><a>上一篇</a></li>
+        <% } %>
+
+
+        <% if(prevNext.next) {%>
+            <li class="pull-right"><a href="/show/detail?articleId=<%= prevNext.next %>">下一篇</a></li>
+        <% } else { %>
+            <li class="pull-right disabled"><a>上一篇</a></li>
+        <% } %>
+    </ul>
+    <% include ../includes/comment.html %>
+</div>
+
+<script>
+    $(function () {
+        $("[data-toggle='popover']").popover({delay:{show:500, hide:100 }});
+    });
+</script>
+

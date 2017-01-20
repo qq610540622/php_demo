@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/D:/wwwroot/blog/Application/Blog/Conf/config.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Blog/Common/function.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Admin/Controller/HomeController.class.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Blog/Controller/IndexController.class.php</file>
+            <file>file:/D:/wwwroot/blog/ThinkPHP/Conf/convention.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Blog/Controller/BaseController.class.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Admin/Conf/config.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Home/Controller/IndexController.class.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Blog/Controller/ArticleController.class.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Admin/View/Home/index.html</file>
+            <file>file:/D:/wwwroot/blog/Application/Blog/index.html</file>
+            <file>file:/D:/wwwroot/blog/ThinkPHP/Library/Think/Page.class.php</file>
+            <file>file:/D:/wwwroot/blog/ThinkPHP/Common/functions.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Home/Conf/config.php</file>
+            <file>file:/D:/wwwroot/blog/Application/index.php</file>
+            <file>file:/D:/wwwroot/blog/Application/Admin/View/index.html</file>
+            <file>file:/D:/wwwroot/blog/Application/Blog/Model/ArticleModel.class.php</file>
+        </group>
+    </open-files>
+</project-private>
